@@ -1,35 +1,19 @@
-@import './base.css';
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+/* Web responsive, primero el celular (ADR-002: el 90 % entra desde el móvil). */
+:root {
+  --fondo: #f5f6f8; --panel: #ffffff; --tinta: #1b2330; --suave: #5d6878; --linea: #d9dee6;
+  --acento: #b3123a; --sobre-acento: #ffffff; --acento-suave: #fbe3e8; --verde: #1d7a3e;
+  --rojo: #c0392b; --rojo-suave: #fdecea;
+  color-scheme: light;
 }
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #10141b; --panel: #18202b; --tinta: #e8ecf2; --suave: #9ba6b6; --linea: #2c3646;
+    --acento: #ff5c7f; --sobre-acento: #1a0710; --acento-suave: #3a1824; --verde: #6fd393;
+    --rojo: #ff8a7a; --rojo-suave: #3a1b18;
+    color-scheme: dark;
   }
 }
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--tinta); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; line-height: 1.5; }
+a { color: var(--acento); }
+button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
