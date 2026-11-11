@@ -41,10 +41,16 @@ Permite entrar como tres personas de prueba, dar un Kudo (con categoría y adjun
 5. `npm install` y `npm run dev`; abre http://localhost:5173.
 6. Entra primero como Luis (así existe como destinatario) y luego como Ana para mandarle un Kudo.
 
+## Modo Entra (producción y prueba local con login real)
+Con `VITE_MODO_AUTENTICACION` distinto de `local`, el front inicia sesión con Microsoft Entra ID (MSAL, código con PKCE),
+pide el token con el scope `Kudos.Usar` y llama a API Management (`VITE_API_URL`), que valida el token y agrega la
+cabecera del gateway. Los destinatarios salen de `GET /api/usuarios` (personas que ya entraron una vez) y los avisos en
+tiempo real llegan por WebSocket con la URL de `GET /api/push/conexion` (Azure Web PubSub). Variables en `.env.example`.
+
 ## Comandos
 - `npm run dev` · servidor local con el proxy al back.
 - `npm run build` · revisión de tipos (`vue-tsc`) y compilación.
-- `npm test` · pruebas con Vitest (cliente de la API y token local).
+- `npm test` · pruebas con Vitest (cliente de la API, token local y canal push).
 
 ## Verificado (9-nov)
 Con el back real, PostgreSQL 18 y Redis 8 locales y el proxy de Vite: categorías 200, feed 200, publicar 201, el Kudo

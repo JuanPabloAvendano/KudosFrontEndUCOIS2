@@ -49,4 +49,20 @@ describe('cliente de kudos-service', () => {
 
     expect(problema).toEqual({ status: 403, title: 'Forbidden', detail: undefined })
   })
+
+  it('usa la base de API Management y pide usuarios y conexión push', async () => {
+    const fetchFalso = vi.fn()
+      .mockResolvedValueOnce(new Response('[{"id":"u1","nombre":"Luis"}]'))
+      .mockResolvedValueOnce(new Response('{"url":"wss://push/ana"}'))
+    vi.stubGlobal('fetch', fetchFalso)
+    const api = crearCliente(async () => 't', 'https://apim.invalid/api')
+
+    const usuarios = await api.usuarios()
+    const conexion = await api.conexionPush()
+
+    expect(usuarios).toEqual([{ id: 'u1', nombre: 'Luis' }])
+    expect(conexion.url).toBe('wss://push/ana')
+    expect(fetchFalso.mock.calls.map((c) => c[0])).toEqual(['https://apim.invalid/api/usuarios',
+      'https://apim.invalid/api/push/conexion'])
+  })
 })

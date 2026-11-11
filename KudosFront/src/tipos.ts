@@ -27,6 +27,17 @@ export interface Pagina<T> {
   siguienteCursor: string | null
 }
 
+/** Persona registrada (entró al menos una vez): a quién se le puede dar un Kudo. */
+export interface UsuarioRegistrado {
+  id: string
+  nombre: string
+}
+
+/** URL temporal del WebSocket de Web PubSub. */
+export interface ConexionPush {
+  url: string
+}
+
 export interface KudoPublicado {
   id: string
   fecha: string

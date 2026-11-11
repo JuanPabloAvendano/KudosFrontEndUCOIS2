@@ -56,7 +56,7 @@ async function publicar() {
     <label for="destinatario">Para</label>
     <select id="destinatario" v-model="destinatarioId" required>
       <option disabled value="">Elige a quién reconoces</option>
-      <option v-for="i in sesion.otras" :key="i.oid" :value="i.oid">{{ i.nombre }}</option>
+      <option v-for="u in sesion.otras" :key="u.id" :value="u.id">{{ u.nombre }}</option>
     </select>
     <label for="categoria">Categoría</label>
     <select id="categoria" v-model="categoriaId" required>

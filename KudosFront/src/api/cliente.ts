@@ -1,4 +1,4 @@
-import type { Categoria, Kudo, KudoPublicado, Pagina, Problema } from '@/tipos'
+import type { Categoria, ConexionPush, Kudo, KudoPublicado, Pagina, Problema, UsuarioRegistrado } from '@/tipos'
 
 /** Error de la API con el problem+json del back y el correlationId para buscarlo en el log. */
 export class ErrorDeApi extends Error {
@@ -20,7 +20,10 @@ export async function leerProblema(respuesta: Response): Promise<Problema> {
   }
 }
 
-/** Cliente de kudos-service: cada llamada lleva el token y un X-Correlation-Id nuevo. */
+/**
+ * Cliente de kudos-service: cada llamada lleva el token y un X-Correlation-Id nuevo. La base es la URL de API Management
+ * en producción o «/api» (proxy de Vite) en local.
+ */
 export function crearCliente(obtenerToken: ObtenerToken, base = '/api') {
   async function llamar<T>(ruta: string, init: RequestInit = {}): Promise<T> {
     const correlationId = crypto.randomUUID()
@@ -36,6 +39,10 @@ export function crearCliente(obtenerToken: ObtenerToken, base = '/api') {
 
   return {
     categorias: () => llamar<Categoria[]>('/categorias'),
+
+    usuarios: () => llamar<UsuarioRegistrado[]>('/usuarios'),
+
+    conexionPush: () => llamar<ConexionPush>('/push/conexion'),
 
     feed: (cursor?: string | null, tamano = 10) => {
       const parametros = new URLSearchParams({ tamano: String(tamano) })
