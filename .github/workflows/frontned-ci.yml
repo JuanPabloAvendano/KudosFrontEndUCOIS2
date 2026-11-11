@@ -1,0 +1,72 @@
+name: frontend-ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: KudosFront
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: KudosFront/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Pruebas
+        run: npm test
+
+      - name: Compilar (tipos + build)
+        run: npm run build
+        env:
+          VITE_MODO_AUTENTICACION: entra
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_ENTRA_AUTORIDAD: ${{ vars.VITE_ENTRA_AUTORIDAD }}
+          VITE_ENTRA_CLIENTE: ${{ vars.VITE_ENTRA_CLIENTE }}
+          VITE_ENTRA_SCOPE: ${{ vars.VITE_ENTRA_SCOPE }}
+          VITE_ENTRA_REDIRECCION: ${{ vars.VITE_ENTRA_REDIRECCION }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: KudosFront/dist
+
+  cd:
+    needs: ci
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Publicar en $web
+        run: >
+          az storage blob upload-batch --account-name storagekudouco --auth-mode login
+          --destination '$web' --source dist --overwrite
